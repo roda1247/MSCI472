@@ -18,3 +18,28 @@ m2 <- read_csv("raw-data/master_m2.csv")
 c1 <- read_csv("raw-data/master_c1.csv")
 ```
 
+```{r cleaning-data}
+m1 <- m1 |> 
+  select(-c(longitude, latitude, mei)) |> 
+  mutate(buoy_id = "M1") |> 
+  mutate(year = format(time, "%Y"),
+         month = format(time, "%m"),
+         day = format(time, "%d"))
+
+m2 <- m2 |> 
+  select(-mei) |> 
+  mutate(buoy_id = "M2")|> 
+  mutate(year = format(time, "%Y"),
+         month = format(time, "%m"),
+         day = format(time, "%d"))
+
+c1 <- c1 |>
+  select(-mei) |> 
+  mutate(buoy_id = "C1")|> 
+  mutate(year = format(time, "%Y"),
+         month = format(time, "%m"),
+         day = format(time, "%d"))
+
+all_sites <- bind_rows(m1, m2, c1)
+```
+
