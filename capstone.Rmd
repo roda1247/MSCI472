@@ -18,6 +18,7 @@ m2 <- read_csv("raw-data/master_m2.csv")
 c1 <- read_csv("raw-data/master_c1.csv")
 ```
 
+
 ```{r cleaning-data, eval=FALSE}
 m1 <- m1 |> 
   select(-c(longitude, latitude, mei)) |> #delete certain columns
@@ -48,7 +49,7 @@ all_sites <- all_sites |>
          upwelling = if_else((direction >= 280 & direction <= 330 )& speed > 4.0, 1, 0)) |> #new column called upwelling based on certain conditions
   mutate(year = as.numeric(year), # changed variables from character to numeric
          month =as.numeric(month),
-         day = as.numeric(day))
+         day = as.numeric(day)) 
 
 write_csv(all_sites, "clean-data/master.csv") # downloads a csv from cleaned data
 ```
