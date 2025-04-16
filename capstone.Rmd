@@ -41,5 +41,9 @@ c1 <- c1 |>
          day = format(time, "%d"))
 
 all_sites <- bind_rows(m1, m2, c1)
+
+all_sites <- all_sites |> 
+  mutate(enso_event = case_when(year %in% c(2004,2005,2006,2009,2013,2014,2015,2017,2018,2019,2020)~ 
+                              "Neutral", TRUE ~ enso_event))
 ```
 
