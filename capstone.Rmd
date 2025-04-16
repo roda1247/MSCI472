@@ -12,17 +12,17 @@ library(ggplot2)
 ```
 
 
-```{r read-in-data}
+```{r read-in-data, eval=FALSE}
 m1 <- read_csv("raw-data/master_m1.csv")
 m2 <- read_csv("raw-data/master_m2.csv")
 c1 <- read_csv("raw-data/master_c1.csv")
 ```
 
-```{r cleaning-data}
+```{r cleaning-data, eval=FALSE}
 m1 <- m1 |> 
-  select(-c(longitude, latitude, mei)) |> 
-  mutate(buoy_id = "M1") |> 
-  mutate(year = format(time, "%Y"),
+  select(-c(longitude, latitude, mei)) |> #delete certain columns
+  mutate(buoy_id = "M1") |> #new column
+  mutate(year = format(time, "%Y"), #new column by extracting year from POSIX format
          month = format(time, "%m"),
          day = format(time, "%d"))
 
@@ -40,10 +40,21 @@ c1 <- c1 |>
          month = format(time, "%m"),
          day = format(time, "%d"))
 
-all_sites <- bind_rows(m1, m2, c1)
+all_sites <- bind_rows(m1, m2, c1) #stacked each dataframe on top of each other
 
 all_sites <- all_sites |> 
   mutate(enso_event = case_when(year %in% c(2004,2005,2006,2009,2013,2014,2015,2017,2018,2019,2020)~ 
-                              "Neutral", TRUE ~ enso_event))
+                              "Neutral", TRUE ~ enso_event), #new variable called "Neutral" for certain years
+         upwelling = if_else((direction >= 280 & direction <= 330 )& speed > 4.0, 1, 0)) |> #new column called upwelling based on certain conditions
+  mutate(year = as.numeric(year), # changed variables from character to numeric
+         month =as.numeric(month),
+         day = as.numeric(day))
+
+write_csv(all_sites, "clean-data/master.csv") # downloads a csv from cleaned data
+```
+
+
+```{r read-in-master-data}
+master <- read_csv("clean-data/master.csv")
 ```
 
