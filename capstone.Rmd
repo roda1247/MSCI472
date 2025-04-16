@@ -1,0 +1,20 @@
+---
+title: "Capstone"
+author: "Bianca Rodas"
+date: "2025-04-16"
+output: html_document
+---
+
+```{r libraries}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+```
+
+
+```{r read-in-data}
+m1 <- read_csv("raw-data/master_m1.csv")
+m2 <- read_csv("raw-data/master_m2.csv")
+c1 <- read_csv("raw-data/master_c1.csv")
+```
+
