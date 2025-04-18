@@ -12,6 +12,7 @@ library(ggplot2)
 library(viridis)
 ```
 
+
 ```{r read-in-data, eval=FALSE}
 m1 <- read_csv("raw-data/master_m1.csv")
 m2 <- read_csv("raw-data/master_m2.csv")
@@ -19,42 +20,37 @@ c1 <- read_csv("raw-data/master_c1.csv")
 ```
 
 ```{r cleaning-data, eval=FALSE}
-m1 <- m1 |> 
-  select(-c(longitude, latitude, mei)) |> #delete certain columns
+m1 <- m1 |>
   mutate(buoy_id = "M1") |> #new column
-  mutate(year = format(time, "%Y"), #new column by extracting year from POSIX format
-         month = format(time, "%m"),
-         day = format(time, "%d"))
+  mutate(year = format(date, "%Y"), #new column by extracting year from POSIX format
+         month = format(date, "%m"),
+         day = format(date, "%d"))
 
 m2 <- m2 |> 
-  select(-mei) |> 
   mutate(buoy_id = "M2")|> 
-  mutate(year = format(time, "%Y"),
-         month = format(time, "%m"),
-         day = format(time, "%d"))
+  mutate(year = format(date, "%Y"),
+         month = format(date, "%m"),
+         day = format(date, "%d"))
 
 c1 <- c1 |>
-  select(-mei) |> 
   mutate(buoy_id = "C1")|> 
-  mutate(year = format(time, "%Y"),
-         month = format(time, "%m"),
-         day = format(time, "%d"))
+  mutate(year = format(date, "%Y"),
+         month = format(date, "%m"),
+         day = format(date, "%d"))
 
 all_sites <- bind_rows(m1, m2, c1) #stacked each dataframe on top of each other
 
 all_sites <- all_sites |> 
-  mutate(enso_event = case_when(year %in% c(2004,2005,2006,2009,2013,2014,2015,2017,2018,2019,2020)~ 
-                              "Neutral", TRUE ~ enso_event),#new variable called "Neutral" for certain years
-         enso_event = case_when(year %in% c(2007, 2010,2016) ~
-                                  "El Nino", TRUE ~ enso_event),#new variable called "El Nino" for certain years
-         enso_event = case_when(year %in% c(2008, 2011, 2012,2021,2022,2023) ~
-                                  "La Nina", TRUE ~ enso_event), #new variable called "La Nina" for certain years
-         upwelling = if_else((direction >= 280 & direction <= 330 )& speed > 4.0, 1, 0)) |> #new column called upwelling based on certain conditions
+  mutate(enso_event = case_when(mei >= -0.5 & mei <= 0.5 ~ "Neutral",
+                                TRUE ~ enso_event),#new variable called "Neutral" for certain years
+         upwelling = if_else((direction >= 280.5 & direction <= 330.5 )& speed > 4.0, 1, 0)) |> #new column called upwelling based on certain conditions
   mutate(year = as.numeric(year), # changed variables from character to numeric
          month =as.numeric(month),
-         day = as.numeric(day)) 
+         day = as.numeric(day),
+         week = ceiling(day(date) / 7))
 
-write_csv(all_sites, "clean-data/master.csv") # downloads a csv from cleaned data
+
+#write_csv(all_sites, "clean-data/master.csv") # downloads a csv from cleaned data
 ```
 
 
@@ -110,6 +106,8 @@ ggplot(heat_data, aes(x = factor(month, levels = 1:12), y = enso_event, fill = p
 
 #ggsave(filename = "figures/upwelling_heatmap.png")
 ```
+
+
 
 
 
