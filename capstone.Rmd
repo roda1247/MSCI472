@@ -62,6 +62,17 @@ upwelling$enso_category <- relevel(upwelling$enso_category, ref = "NO")
 ```
 
 
+## Visualizations
+
+**Chlorophyll-a**
+
+```{r}
+ggplot()
+```
+
+
+
+
 ## Exploratory Data Analysis
 
 **Upwelling Onset**
