@@ -47,78 +47,107 @@ all_sites <- all_sites |>
   mutate(year = as.numeric(year), # changed variables from character to numeric
          month =as.numeric(month),
          day = as.numeric(day),
-         week = ceiling(day(date) / 7))
+         week_month = ceiling(day(date) / 7),
+         week = week(date))
 
-
-#write_csv(all_sites, "clean-data/master.csv") # downloads a csv from cleaned data
+write_csv(all_sites, "clean-data/master.csv") # downloads a csv from cleaned data
 ```
 
 
 ```{r read-in-master-data}
 master <- read_csv("clean-data/master.csv")
-```
-
-```{r}
-heat_data <- master |>
-  group_by(enso_event, month) |>
-  summarise(upwelling_count = sum(upwelling, na.rm = TRUE),
-            prop_upwelling = mean(upwelling, na.rm = TRUE), .groups = "drop")
-
-master$enso_event <- factor(master$enso_event, 
-                                        levels = c("Neutral", "El Nino", "La Nina")) 
-  
+upwelling <- read_csv("clean-data/Data Table Upwelling Onset & Duration - Sheet1.csv")
+upwelling$enso_category <- factor(upwelling$enso_category)
+upwelling$enso_category <- relevel(upwelling$enso_category, ref = "NO")
 ```
 
 
-## Visualizations 
+## Exploratory Data Analysis
 
-
-```{r}
-# Create heatmap by counts of upwelling events per month
-ggplot(heat_data, aes(x = factor(month, levels = 1:12), 
-                      y = enso_event, 
-                      fill = upwelling_count)) +
-  geom_tile(color = "white") +
-  scale_fill_viridis() +
-  labs(title = "Monthly Upwelling Count by ENSO Event",
-       x = "Months", 
-       y = "ENSO Events",
-       color= "Upwelling Count") +
-  theme_classic()
-
-```
-
+**Upwelling Onset**
 
 ```{r}
-# Create heatmap by proportions of upwelling events per month
-ggplot(heat_data, aes(x = factor(month, levels = 1:12), y = enso_event, fill = prop_upwelling)) +
-  geom_tile(color = "white") +
-  scale_fill_viridis(name = "Upwelling Prop") +
-  labs(x = "Month", 
-       y = "ENSO Event", 
-       title = "Monthly Upwelling Proportion by ENSO Event",
-       caption= str_wrap("Figure. Heatmap of proportion of months with upwelling events across different ENSO phases (El Niño, La Niña, and Neutral) and calendar months. Each tile represents the fraction of months—aggregated across multiple years—in which upwelling occurred during a specific ENSO condition and month. Yellow tiles indicate a higher proportion of upwelling months (closer to 1.0), while purple tiles indicate lower proportions.",
-                         width = 108)) +
-  theme_classic()+
-  theme(plot.caption = element_text(size = 9,
+ggplot(upwelling, aes(x=enso_category, y=upwelling_onset,fill=enso_category))+
+  geom_violin(alpha=0.5, trim=F) +
+  stat_summary(fun = median, geom = "crossbar", 
+               width = 0.75, color = "red", fatten = 0)+
+  geom_jitter()+
+  labs(x="",
+       y="Upwelling Onset (weeks)",
+       caption= str_wrap("Figure. Violin plot showing the distribution of upwelling onset (in weeks of the year) across three ENSO categories: El Niño, La Niña, and Neutral years. The red horizontal line within each violin indicates the median onset week.",
+                         width = 93))+
+  theme_bw()+
+  theme(legend.position="none",
+        plot.caption = element_text(size = 11,
                                     hjust = 0,
-                                    margin = margin(t = 10)))
+                                    margin = margin(t = 10)))+
+  scale_fill_viridis(discrete=T)+
+  scale_x_discrete(labels = c("NO" = "Neutral", 
+                              "EN" = "El Nino", 
+                              "LN" = "La Nina"))
 
-#ggsave(filename = "figures/upwelling_heatmap.png")
+#ggsave(filename = "figures/upwelling_onset.png")
 ```
 
 
+**Upwelling Duration**
 
+```{r}
+ggplot(upwelling, aes(x=enso_category, y=upwelling_duration,fill=enso_category))+
+  geom_violin(alpha=0.5, trim=F) +
+  stat_summary(fun = median, geom = "crossbar", 
+               width = 0.65, color = "red", fatten = 0)+
+  geom_jitter()+
+  labs(x="",
+       y="Upwelling Duration (weeks)",
+       caption= str_wrap("Figure. Violin plot showing the distribution of upwelling duration (in weeks of the year) across three ENSO categories: El Niño, La Niña, and Neutral years. The red horizontal line within each violin indicates the median onset week.",
+                         width = 93))+
+  theme_bw()+
+  theme(legend.position="none",
+        plot.caption = element_text(size = 11,
+                                    hjust = 0,
+                                    margin = margin(t = 10)))+
+  scale_fill_viridis(discrete=T)+
+  scale_x_discrete(labels = c("NO" = "Neutral", 
+                              "EN" = "El Nino", 
+                              "LN" = "La Nina"))
+
+#ggsave(filename = "figures/upwelling_duration.png")
+```
 
 
 ## Analysis
 
+**Upwelling Onset Model**
+
+```{r}
+onset <- glm(data=upwelling, upwelling_onset ~ enso_category)
+summary(onset)
+```
+
+
+
+```{r}
+plot(onset_model, 1, add.smooth=F)
+plot(onset_model, 2)
+plot(onset_model, 5, add.smooth=F)
+shapiro.test(residuals(onset_model))
+```
 
 
 
 
+```{r}
+duration <- glm(data=upwelling, upwelling_duration ~ enso_category)
+summary(duration)
+```
 
-
+```{r}
+plot(duration_model, 1, add.smooth=F)
+plot(duration_model, 2)
+plot(duration_model, 5, add.smooth=F)
+shapiro.test(residuals(duration_model))
+```
 
 
 
