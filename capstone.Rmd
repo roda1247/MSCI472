@@ -128,10 +128,10 @@ summary(onset)
 
 
 ```{r}
-plot(onset_model, 1, add.smooth=F)
-plot(onset_model, 2)
-plot(onset_model, 5, add.smooth=F)
-shapiro.test(residuals(onset_model))
+plot(onset, 1, add.smooth=F)
+plot(onset, 2)
+plot(onset, 5, add.smooth=F)
+shapiro.test(residuals(onset))
 ```
 
 
@@ -143,10 +143,10 @@ summary(duration)
 ```
 
 ```{r}
-plot(duration_model, 1, add.smooth=F)
-plot(duration_model, 2)
-plot(duration_model, 5, add.smooth=F)
-shapiro.test(residuals(duration_model))
+plot(duration, 1, add.smooth=F)
+plot(duration, 2)
+plot(duration, 5, add.smooth=F)
+shapiro.test(residuals(duration))
 ```
 
 
