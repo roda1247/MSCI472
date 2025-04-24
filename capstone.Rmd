@@ -66,7 +66,7 @@ upwelling$enso_category <- relevel(upwelling$enso_category, ref = "NO")
 
 **Upwelling Onset**
 
-```{r}
+```{r onset-plot}
 ggplot(upwelling, aes(x=enso_category, y=upwelling_onset,fill=enso_category))+
   geom_violin(alpha=0.5, trim=F) +
   stat_summary(fun = median, geom = "crossbar", 
@@ -92,7 +92,7 @@ ggplot(upwelling, aes(x=enso_category, y=upwelling_onset,fill=enso_category))+
 
 **Upwelling Duration**
 
-```{r}
+```{r duration-plot}
 ggplot(upwelling, aes(x=enso_category, y=upwelling_duration,fill=enso_category))+
   geom_violin(alpha=0.5, trim=F) +
   stat_summary(fun = median, geom = "crossbar", 
@@ -120,34 +120,46 @@ ggplot(upwelling, aes(x=enso_category, y=upwelling_duration,fill=enso_category))
 
 **Upwelling Onset Model**
 
-```{r}
-onset <- glm(data=upwelling, upwelling_onset ~ enso_category)
+```{r onset-model}
+onset <- lm(data=upwelling, upwelling_onset ~ enso_category)
 summary(onset)
 ```
 
-
-
-```{r}
+```{r onset-model-assumptions, eval=FALSE}
 plot(onset, 1, add.smooth=F)
 plot(onset, 2)
 plot(onset, 5, add.smooth=F)
 shapiro.test(residuals(onset))
 ```
 
+> The mean upwelling onset during Neutral years happens around week 12.8
+> During El Nino, upwelling happens 3.15 weeks earlier, but has moderate evidence (p-value = 0.0549)
+> During La Nina, upwelling happens 3.15 weeks earlier, and has strong evidence (p-value = 0.01)
+> The model overall is statistically significant (p-value = 0.02768), meaning ENSO category explains a meaningful amount of variation in upwelling timing.
+> About 34% of the variation in upwelling onset is explained by ENSO category
 
 
+**Upwelling Duration**
 
-```{r}
-duration <- glm(data=upwelling, upwelling_duration ~ enso_category)
+```{r duration-model}
+duration <- lm(data=upwelling, upwelling_duration ~ enso_category)
 summary(duration)
 ```
 
-```{r}
+```{r duration-model-assumptions, eval=FALSE}
 plot(duration, 1, add.smooth=F)
 plot(duration, 2)
 plot(duration, 5, add.smooth=F)
 shapiro.test(residuals(duration))
 ```
+
+> The mean upwelling duration is about 27.36 weeks long
+> During Ell Nino years, upwelling happens 4.6 weeks longer than neutral years, but little to no evidence
+> During La Nina, upwelling happens 4.3 weeks longer, but has weak evidence 
+> The overall model is not statistically significant (p-value = 0.1125)
+
+
+
 
 
 
