@@ -56,9 +56,9 @@ write_csv(all_sites, "clean-data/master.csv") # downloads a csv from cleaned dat
 
 ```{r read-in-master-data}
 master <- read_csv("clean-data/master.csv")
-upwelling <- read_csv("clean-data/Data Table Upwelling Onset & Duration - Sheet1.csv")
-upwelling$enso_category <- factor(upwelling$enso_category)
-upwelling$enso_category <- relevel(upwelling$enso_category, ref = "NO")
+upwelling <- read_csv("clean-data/upwelling.csv")
+upwelling$enso_category_modified <- as.factor(upwelling$enso_category_modified)
+upwelling$enso_category_modified <- relevel(upwelling$enso_category_modified, ref = "NO")
 ```
 
 
@@ -67,7 +67,21 @@ upwelling$enso_category <- relevel(upwelling$enso_category, ref = "NO")
 **Chlorophyll-a**
 
 ```{r}
-ggplot()
+chlor_04 <- master |> 
+  filter(year == 2004)
+  
+ggplot(chlor_04, aes(x=month, y=chlorophyll))+
+  geom_jitter()+
+  geom_smooth()+
+  facet_wrap(~ year)
+
+chlor_05 <- master |> 
+  filter(year == 2004)
+  
+ggplot(chlor_05, aes(x=month, y=chlorophyll))+
+  geom_jitter()+
+  geom_smooth()+
+  facet_wrap(~ year)
 ```
 
 
@@ -78,7 +92,7 @@ ggplot()
 **Upwelling Onset**
 
 ```{r onset-plot}
-ggplot(upwelling, aes(x=enso_category, y=upwelling_onset,fill=enso_category))+
+ggplot(upwelling, aes(x=enso_category_modified, y=upwelling_onset,fill=enso_category_modified))+
   geom_violin(alpha=0.5, trim=F) +
   stat_summary(fun = median, geom = "crossbar", 
                width = 0.75, color = "red", fatten = 0)+
@@ -104,10 +118,10 @@ ggplot(upwelling, aes(x=enso_category, y=upwelling_onset,fill=enso_category))+
 **Upwelling Duration**
 
 ```{r duration-plot}
-ggplot(upwelling, aes(x=enso_category, y=upwelling_duration,fill=enso_category))+
+ggplot(upwelling, aes(x=enso_category_modified, y=upwelling_duration,fill=enso_category_modified))+
   geom_violin(alpha=0.5, trim=F) +
   stat_summary(fun = median, geom = "crossbar", 
-               width = 0.65, color = "red", fatten = 0)+
+               width = 0.4, color = "red", fatten = 0)+
   geom_jitter()+
   labs(x="",
        y="Upwelling Duration (weeks)",
@@ -132,7 +146,7 @@ ggplot(upwelling, aes(x=enso_category, y=upwelling_duration,fill=enso_category))
 **Upwelling Onset Model**
 
 ```{r onset-model}
-onset <- lm(data=upwelling, upwelling_onset ~ enso_category)
+onset <- lm(data=upwelling, upwelling_onset ~ enso_category_modified)
 summary(onset)
 ```
 
@@ -153,7 +167,7 @@ shapiro.test(residuals(onset))
 **Upwelling Duration**
 
 ```{r duration-model}
-duration <- lm(data=upwelling, upwelling_duration ~ enso_category)
+duration <- lm(data=upwelling, upwelling_duration ~ enso_category_modified)
 summary(duration)
 ```
 
