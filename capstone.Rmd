@@ -67,21 +67,7 @@ upwelling$enso_category_modified <- relevel(upwelling$enso_category_modified, re
 **Chlorophyll-a**
 
 ```{r}
-chlor_04 <- master |> 
-  filter(year == 2004)
-  
-ggplot(chlor_04, aes(x=month, y=chlorophyll))+
-  geom_jitter()+
-  geom_smooth()+
-  facet_wrap(~ year)
 
-chlor_05 <- master |> 
-  filter(year == 2004)
-  
-ggplot(chlor_05, aes(x=month, y=chlorophyll))+
-  geom_jitter()+
-  geom_smooth()+
-  facet_wrap(~ year)
 ```
 
 
@@ -96,10 +82,10 @@ ggplot(upwelling, aes(x=enso_category_modified, y=upwelling_onset,fill=enso_cate
   geom_violin(alpha=0.5, trim=F) +
   stat_summary(fun = median, geom = "crossbar", 
                width = 0.75, color = "red", fatten = 0)+
-  geom_jitter()+
+  geom_jitter(width=0.15)+
   labs(x="",
        y="Upwelling Onset (weeks)",
-       caption= str_wrap("Figure. Violin plot showing the distribution of upwelling onset (in weeks of the year) across three ENSO categories: El Niño, La Niña, and Neutral years. The red horizontal line within each violin indicates the median onset week.",
+       caption= str_wrap("Figure 9. Violin plot showing the distribution of upwelling onset (in weeks of the year) across three ENSO categories: El Niño, La Niña, and Neutral years. The red horizontal line within each violin indicates the median onset week.",
                          width = 93))+
   theme_bw()+
   theme(legend.position="none",
@@ -122,10 +108,10 @@ ggplot(upwelling, aes(x=enso_category_modified, y=upwelling_duration,fill=enso_c
   geom_violin(alpha=0.5, trim=F) +
   stat_summary(fun = median, geom = "crossbar", 
                width = 0.4, color = "red", fatten = 0)+
-  geom_jitter()+
+  geom_jitter(width=0.15)+
   labs(x="",
        y="Upwelling Duration (weeks)",
-       caption= str_wrap("Figure. Violin plot showing the distribution of upwelling duration (in weeks of the year) across three ENSO categories: El Niño, La Niña, and Neutral years. The red horizontal line within each violin indicates the median onset week.",
+       caption= str_wrap("Figure 10. Violin plot showing the distribution of upwelling duration (in weeks of the year) across three ENSO categories: El Niño, La Niña, and Neutral years. The red horizontal line within each violin indicates the median onset week.",
                          width = 93))+
   theme_bw()+
   theme(legend.position="none",
